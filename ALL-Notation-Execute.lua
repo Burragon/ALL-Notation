@@ -18,7 +18,11 @@ local output = 0
 if #values == #functions then
 for ii = #indexset, 1, -1 do
 for i = #functions, 1, -1 do
+if i == #functions and ii == #indexset then
+output = values[i]
+else
 output = functions[i](values[i],output)
+end
 end
 end
 return output
