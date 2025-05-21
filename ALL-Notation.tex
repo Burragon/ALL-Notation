@@ -16,6 +16,10 @@
 
 \maketitle
 
+\section{Abstract}
+
+Describing or showing many repeated operations on lists of values can be tricky. These nests of operations and operands can be too long to describe perfectly, but compressing their expressions could lead to confusion. However, with a new notation, we can describe these complex folds/reductions in a short notation that leaves no room for misconceptions by having a perfect algorithm to execute it. In this document, we shall refer to this notation as ALL notation. With this ALL notation, we can describe summation, products, continued fractions, and infinitely many more folds/reductions with ease and accuracy. To respect its name and what it can represent, we will write the notation with a large ALL, bounds like summation or products, and an array containing the operations and operands.
+
 \section{Introduction to ALL Notation}
 
 In this document, we will explore the usage and generalization of operations on (infinite) lists of values. Let the notation:
@@ -46,7 +50,7 @@ a_{n,1} & a_{n,2} & \cdots & a_{n,y} \\
 \star_1 & \star_2 & \cdots & \star_y
 \end{bmatrix}=a_{x,1} \star_1 (a_{x,2} \star_2 (\cdots a_{x,y-1} \star_{y-1} (a_{x,y})))$$
 
-Where $\star_n$ denotes a binary operation and $a_{b,c}$ is the $b$th $c$th value of $a$. The nonstandard matrix of our $ALL$ notation is an argument of the function with a datatype of an array. The index and upper bound of our notation are obviously integers like in other notations such as summation. Our notation describes what we will call in this paper a (multi-)operational series. The term does not refer to simply multiple operations in summation notation in this paper. This notation implies:
+Where $\star_n$ denotes a binary operation and $a_{b,c}$ is the $b$th $c$th value of $a$. The nonstandard matrix of our $ALL$ notation is an argument of the function with a datatype of an array. The index and upper bound of our notation are obviously integers like in other notations such as summation. This is also known as a fold or reduction in functional programming. The notation above specifically folds right with multiple operators and operands. Our notation describes what we will call in this paper a(n) (multi-)operational series. The term does not refer to simply multiple operations in summation notation in this paper. This notation implies:
 
 $$\underset{n=1}{\overset{\infty}{ALL}} \begin{bmatrix}
 a_n \\
@@ -58,7 +62,10 @@ And
 $$\underset{n=1}{\overset{\infty}{ALL}} \begin{bmatrix}
 a_n \\
 *
-\end{bmatrix}= \underset{n=1}{\overset{\infty}{\prod}} a_n$$
+\end{bmatrix}= \underset{n=1}{\overset{\infty}{\prod}} a_n = \underset{n=1}{\overset{\infty}{ALL}} \begin{bmatrix}
+a_n \\
+\times
+\end{bmatrix}$$
 
 And
 
@@ -136,7 +143,7 @@ We can even generalize this further to two or more functions:
 $$\underset{n=1}{\overset{3}{ALL}} \begin{bmatrix}
 a_n & b_n\\
 \star_f & \star_g
-\end{bmatrix} = a_1 \star_f (b_1 \star_g (a_2  \star_f (b_2 \star_g (a_3 \star_f b_3))))$$
+\end{bmatrix} = a_1 \star_f (b_1 \star_g (a_2  \star_f (b_2 \star_g (a_3 \star_f b_3))))$$
 
 Where the equality above equates to:
 
@@ -156,7 +163,7 @@ a_n & b_n \\
 +& +
 \end{bmatrix} = \underset{n=1}{\overset{\infty}{ALL}} \begin{bmatrix}
 a_n + b_n \\
- +
+ +
 \end{bmatrix}$$
 
 And
@@ -166,7 +173,7 @@ a_n & b_n \\
 *& *
 \end{bmatrix} = \underset{n=1}{\overset{\infty}{ALL}} \begin{bmatrix}
 a_n * b_n \\
- *
+ *
 \end{bmatrix}$$
 
 Because of the properties:
@@ -182,7 +189,7 @@ a_n & b_n \\
 =& =
 \end{bmatrix} = \underset{n=1}{\overset{\infty}{ALL}} \begin{bmatrix}
 a_n = b_n \\
- =
+ =
 \end{bmatrix}$$
 
 And:
@@ -192,7 +199,7 @@ A_n & B_n \\
 \bigcup & \bigcup
 \end{bmatrix} = \underset{n=1}{\overset{\infty}{ALL}} \begin{bmatrix}
 A_n \bigcup B_n \\
- \bigcup
+ \bigcup
 \end{bmatrix}$$
 
 The notation with equalities above is usually true because an equality returns a boolean and if $a=b=c=d$ is true, $a=b$ is true and $c=d$ is true, implying $(a=b)=(c=d)$ because true = true. However, if $a=b=c=d$ is false, $(a=b)=(c=d)$ may return true. However, both statements usually are false for randomized inputs. As you can see, subtraction, division, and many other operations would differ:
@@ -208,7 +215,7 @@ C[1](A[1],n) & C[2](A[2],n) & \cdots & C[z](A[z],n) \\
 \star_{B[1]}& \star_{B[2]} & \cdots & \star_{B[z]}
 \end{bmatrix}$$
 
-Where $A$ is a list of values (operands), $B$ and $C$ are lists of two-input functions, $x$ and $y$ are integers, and $z = \# A = \# B = \# C$. Function $All$ is defined as:
+Where $A$ is a list of values (operands), $B$ and $C$ are lists of two-input functions, $x$ and $y$ are integers, and $z = \# A = \# B = \# C$. Function $All$ is could be defined as:
 
 $${}$$
 
@@ -236,7 +243,43 @@ end
 
 $${}$$
 
-On yet another tangent, we can also input functions in the top row of the nonstandard matrix of our $ALL$ notation. For instance:
+However, the program above would be perfect if the result was not initially set to 0. The result should be initially set to the last value, however that would complicate the for-loops. Executing this script with binary operations such as a product would reveal errors like it resulting in zero when the actual ALL notation is not zero. Perhaps we can solve this problem by improving the code above:
+
+$${}$$
+
+local function $All(A, B, C, x, y)$
+
+local Output = 0
+
+if $\#A$==$\#B$ and $\#B$==$\#C$ then
+
+for i = $y$, $x$, -1 do
+
+for ii = $\#B$, 1, -1 do
+
+if ii == $\#B$ and i == $y$ then
+
+Output = $C$[$\#B$]($A$[$\#B$],$y$)
+
+else
+
+Output = $B$[ii]($C$[ii]($A$[ii],i), Output)
+
+end
+
+end
+
+end
+
+return Output
+
+end
+
+end
+
+$${}$$
+
+ On yet another tangent, we can also input functions in the top row of the nonstandard matrix of our $ALL$ notation. For instance:
 
 $$(\underset{n=1}{\overset{x}{ALL}} \begin{bmatrix}
 f_n \\
@@ -294,7 +337,7 @@ a \\
 \end{bmatrix} = \begin{array}{ll} a & x=1 \\ 0 & x=2 \\ \text{undefined} & x \neq 1,2 \end{array} $$
 
 $$ \underset{n=1}{\overset{x}{ALL}} \begin{bmatrix}
-a & b  \\
+a & b  \\
 \% & \%
 \end{bmatrix} \text{is undefined for many rational inputs when }x > 1$$
 
@@ -352,7 +395,7 @@ a_1 \\ a_2 \end{array}\right. \right] = +(a_1,a_2)=a_1+a_2$$
 We can also nest these functions in each other:
 
 $$\left[ + \left\{ \begin{array}{rcl}
-a_1 \\ \star \left\{  \begin{array} {rcl} a_2 \\ a_3\end{array} \right. \end{array}\right. \right] = +(a_1,\star(a_2,a_3))=a_1+(a_2 \star a_3)$$
+a_1 \\ \star \left\{  \begin{array} {rcl} a_2 \\ a_3\end{array} \right. \end{array}\right. \right] = +(a_1,\star(a_2,a_3))=a_1+(a_2 \star a_3)$$
 
 This notation is great because it clearly shows how many operands each $n$-ary operation uses. Using the notation above with our $ALL$ notation, we could get:
 
@@ -360,12 +403,12 @@ $$\underset{n=1}{\overset{x}{ALL}} \begin{bmatrix}
 a_n \\
 \star
 \end{bmatrix}=\left[ \star \left\{ \begin{array}{rcl}
-a_1 \\ \star \left\{  \begin{array} {rcl} a_2 \\ \cdots  \star \left\{ \begin{array}{rcl}
+a_1 \\ \star \left\{  \begin{array} {rcl} a_2 \\ \cdots  \star \left\{ \begin{array}{rcl}
 a_{x-1} \\ a_x \end{array} \right. \end{array} \right. \end{array}\right. \right]$$
 
 This is just one of the many ways to describe the $ALL$ notation in this document.
 
-\section{Various Properties of $ALL$ Notations}
+\section{Various Properties of ALL Notation}
 
 In this section, we will explore the various properties of our $ALL$ notation with specific inputs.
 Recall:
@@ -375,7 +418,7 @@ a_n & b_n \\
 +& +
 \end{bmatrix} = \underset{n=1}{\overset{\infty}{ALL}} \begin{bmatrix}
 a_n + b_n \\
- +
+ +
 \end{bmatrix}$$
 
 And
@@ -385,7 +428,7 @@ a_n & b_n \\
 *& *
 \end{bmatrix} = \underset{n=1}{\overset{\infty}{ALL}} \begin{bmatrix}
 a_n * b_n \\
- *
+ *
 \end{bmatrix}$$
 
 Because of the properties:
@@ -395,7 +438,7 @@ $$a+b+c+d=(a+b)+(c+d)$$
 $$a*b*c*d=(a*b)*(c*d)$$
 Therefore, given $\star$ is a binary operation where:
 
-$$a\star(b\star(c\star(d)))=(a \star b) \star (c \star d)$$ 
+$$a\star(b\star(c\star(d)))=(a \star b) \star (c \star d)$$ 
 
 Then:
 
@@ -404,7 +447,7 @@ a_n & b_n \\
 \star & \star
 \end{bmatrix} = \underset{n=1}{\overset{\infty}{ALL}} \begin{bmatrix}
 a_n \star b_n \\
- \star
+ \star
 \end{bmatrix}$$
 
 We can also describe this property with our function notation of binary operations. Given $a\star_fb=f(a,b)$ and $f(f(a,b),f(c,d))=f(a,f(b,f(c,d)))$ then:
@@ -414,20 +457,20 @@ a_n & b_n \\
 \star_f & \star_f
 \end{bmatrix} = \underset{n=1}{\overset{\infty}{ALL}} \begin{bmatrix}
 a_n \star_f b_n \\
- \star_f
+ \star_f
 \end{bmatrix}$$
 
 Functions such as $f(x,y)=x+y$ and $f(x,y)=x*y$ satisfy the formula above. $f(x,y)=x-y$, $f(x,y)=x/y$, $f(x,y)=x^y$, $f(x,y)=x\%y$, etc. do not satisfy the formula above. Some more functions that DO satisfy the formula above are:
 
 $$f(x,y)=x$$
-$$f(x,y)=z, z\in\mathbb{C}$$ 
-$$f(x,y)=y$$ 
-$$f(x,y)=|x|$$ 
-$$f(x,y)=|y|$$ 
-$$f(x,y)=\lfloor x \rfloor$$ 
+$$f(x,y)=z, z\in\mathbb{C}$$ 
+$$f(x,y)=y$$ 
+$$f(x,y)=|x|$$ 
+$$f(x,y)=|y|$$ 
+$$f(x,y)=\lfloor x \rfloor$$ 
 $$f(x,y)=\lceil x \rceil$$
 $$f(x,y)=\lfloor x \rceil$$
-$$f(x,y)=\lfloor y \rfloor$$ 
+$$f(x,y)=\lfloor y \rfloor$$ 
 $$f(x,y)=\lceil y \rceil$$
 $$f(x,y)=\lfloor y \rceil$$
 
@@ -515,7 +558,7 @@ a_n & b_n \\
 + & *
 \end{bmatrix}=\underset{x\xrightarrow{}\infty}{\text{lim}} a_1 + (\underset{k=1}{\overset{x}{\prod}} b_{k})+\underset{k=2}{\overset{x}{\sum}} (a_{k} \underset{m=1}{\overset{k-1}{\prod}} b_{m})$$
 
-\section{Various Notations of $ALL$ Notation}
+\section{Various Notations of ALL Notation}
 
 We can show various series of numbers and operations with different forms of $ALL$ notation. For instance, let:
 
@@ -644,7 +687,11 @@ We get:
 
 $$a \text{REVERSE}(\star_f) b = f(b,a)$$
 
-So instead of using an exponent of -1 on the binary operations that could be confused for inverse operations, we will use this REVERSE function for now. Perhaps to shorten the name of the function, we will abbreviate it to REV. REV takes a single binary operation input and outputs another binary operation, where, of course, the inputs of the binary operation switch. Composing the REV function with itself will return the original argument. Therefore:
+Also:
+
+$$f(a,b)=\text{REVERSE}(f)(b,a)$$
+
+So instead of using an exponent of -1 on the binary operations that could be confused for inverse operations, we will use this REVERSE function for now. Perhaps to shorten the name of the function, we will abbreviate it to REV. Many also call this function the flip function. REV takes a single binary operation or binary function input and outputs another binary operation, where, of course, the new binary operation is the original binary operation with switched inputs. Composing the REV function with itself will return the original argument. Therefore:
 
 $$\text{REV}(\text{REV}(\star))=\star \implies \text{REV}(\star) = \text{REV}^{-1}(\star)$$
 
@@ -708,7 +755,7 @@ $$(f_1 \circ_2 f_2 \circ_2 f_3)(a_1,a_2,a_3)=f_1(a_1,f_2(a_2,a_3))$$
 
 Where the last function is ignored completely. This implies:
 
- $$(f_1 \circ_2 f_2 \circ_2 f_3 \circ_2 \cdots \circ_2 f_n)(a_1,a_2,a_3,\cdots,a_n)=f_1(a_1,f_2(a_2,\cdots f_{n-1}(a_{n-1},a_n)))$$
+ $$(f_1 \circ_2 f_2 \circ_2 f_3 \circ_2 \cdots \circ_2 f_n)(a_1,a_2,a_3,\cdots,a_n)=f_1(a_1,f_2(a_2,\cdots f_{n-1}(a_{n-1},a_n)))$$
 
 And furthermore, given:
 
@@ -728,16 +775,16 @@ $$g(1,g(2,g(2,\cdots(g(x,y))))$$
 Where $f_{z}(a_{x,z},y)=a_{x,z}$. Although this notation above is not that great and $a_{x,z}$ is likely not in the domain of $g$ for any argument $y$. Hence, the definition shown in the introduction on how ALL notation can be executed by a program is the best definition to apply ternary operations on. Now that we slightly understand ternary operations, we need a way to differentiate their symbols from binary operations in our new notation. So in the notation below, let $f_n$ be a ternary function for all $n$. Let:
 
 
-$$\underset{n=1}{\overset{x}{ALL}} \begin{bmatrix}
+$$\underset{n=1}{\overset{\infty}{ALL}} \begin{bmatrix}
 a_{n,1} & a_{n,2} & \cdots & a_{n,y} \\
 \star_{f_1} & \star_{f_2} & \cdots & \star_{f_y}
 \end{bmatrix}$$
 
 Equal:
 
-$$$$
+$$f_1(a_{1,1},a_{1,2},f_2(a_{1,3},a_{1,4},\cdots))$$
 
-Interestingly, our $All$ notation from the introduction which represents the general form of ALL notation takes 5 inputs, making it a quinary operation of three table inputs and two integer inputs. Of course, the number of values in the tables exceed three, and you can combine a all of the inputs into one large table if you wanted to.
+Interestingly, our $All$ notation from the introduction which represents the general form of ALL notation takes 5 inputs, making it a quinary operation of three table inputs and two integer inputs. Of course, you can combine all of the inputs into one large table if you wanted to.
 
 \section{Execution}
 
@@ -776,7 +823,44 @@ end
 
 $${}$$
 
-This more generalized algorithm can execute almost all forms of ALL notation, especially if you add a fifth argument that also modifies the binary operations based on the index (like $\star_{\text{column, index}}$). You would simply have to verify that all of the binary operations are actually defined. The reason why the index is usually not a subscript of the binary operations is because the inputs for them are already affected by the index in the algorithm above. Therefore, you can modify the binary operations specifically for those values affected by the index if you wanted to. This is similar to how the third row in the matrix argument is not usually added because you can simply define your binary operations to have a series in them. There is a problem about this notation and algorithm we have not explored yet in this paper: what if the number of values and operations was infinite (the number of columns in the ALL notation’s array is infinite)? We could simply substitute infinity (math.huge) for $\#A$, $\#B$, and $\#C$. Of course, if there are infinite binary operations or the notation has an infinite upper bound, a device could never completely compute the value with the algorithm above. Of course, the various operations and formulas can guide one usually to an exact, simplified answer. As you may have noticed, the for loops all start at the end of the ALL notation expression and work their way backwards by subtracting 1 from the indices when each loop is completed. One problem with the algorithm above is how we define the set $D$. The algorithm above has the index i equal to specific values of $D$ in a specific order. This makes $D$ (and all of the other tables) are not like a set because given the set:
+Or more accurately:
+
+$${}$$
+
+local function $All(A, B, C, D)$
+
+local Output = 0
+
+if $\#A$==$\#B$ and $\#B$==$\#C$ then
+
+for i = $\#D$, 1, -1 do
+
+for ii = $\#B$, 1, -1 do
+
+if i == $\#D$ and ii == $\#B$ then
+
+Output = $C$[ii]($A$[ii],$D$[i])
+
+else
+
+Output = $B$[ii]($C$[ii]($A$[ii],$D$[i]), Output)
+
+end
+
+end
+
+end
+
+return Output
+
+end
+
+end
+
+$${}$$
+
+
+This more generalized algorithm can execute almost all forms of ALL notation, especially if you add a fifth argument that also modifies the binary operations based on the index (like $\star_{\text{column, index}}$). You would simply have to verify that all of the binary operations are actually defined. The algorithm above is perhaps a simple genralization of the algorithm for reductions/folds shown on this video: \url{https://www.youtube.com/watch?v=d1peBFDPEUw}. If $\#A \neq \#B$ or $\#B \neq \#C$, then the function returns nothing (nil). It could also be modified to return an error message or 0 if they are unequal. The reason why the index is usually not a subscript of the binary operations is because the inputs for them are already affected by the index in the algorithm above. Therefore, you can modify the binary operations specifically for those values affected by the index if you wanted to. This is similar to how the third row in the matrix argument is not usually added because you can simply define your binary operations to have a series in them. There is a problem about this notation and algorithm we have not explored yet in this paper: what if the number of values and operations was infinite (the number of columns in the ALL notation’s array is infinite)? We could simply substitute infinity (math.huge) for $\#A$, $\#B$, and $\#C$. Of course, if there are infinite binary operations or the notation has an infinite upper bound, a device could never completely compute the value with the algorithm above. Of course, the various operations and formulas can guide one usually to an exact, simplified answer. As you may have noticed, the for loops all start at the end of the ALL notation expression and work their way backwards by subtracting 1 from the indices when each loop is completed. One problem with the algorithm above is how we define the set $D$. The algorithm above has the index i equal to specific values of $D$ in a specific order. This makes $D$ (and all of the other tables) are not like a set because given the set:
 
 $$X=Y\bigcup Z$$
 
@@ -807,7 +891,28 @@ However, this only works in the notations shown above because for these operatio
 $$x\star y = y \star x$$
 And
 $$x \star (y \star z) = y \star (x \star z) = z \star (y \star x)$$
-However, the likelihood of many operations behaving like the ones above can be quite low when dealing with multiple unique binary operation inputs in the ALL notation. Overall, here are the various datatypes in $All_2(A,B,C,D)$: $A$ and $D$ are lists of numbers; $B$ and $C$ are lists of binary functions.
+However, the likelihood of many operations behaving like the ones above can be quite low when dealing with multiple unique binary operation inputs in the ALL notation. Overall, here are the various datatypes in $All_2(A,B,C,D)$: $A$ and $D$ are lists of numbers; $B$ and $C$ are lists of binary functions. We can rewrite simple forms of ALL notation (specifically ALL notation with a single column in its argument matrix) into a right or left fold (foldr and foldl functions).
+
+$$\underset{n=x}{\overset{y}{ALL}} \begin{bmatrix}
+a_n\\
+\star_f
+\end{bmatrix} = f(a_x,f(a_{x+1},\cdots f(a_{y-1},a_y) \cdots))$$
+
+Therefore
+
+$$\underset{n=x}{\overset{y}{ALL}} \begin{bmatrix}
+a_n\\
+\star_f
+\end{bmatrix} = \text{foldr } f \text{ } a_y \text{ } [a_x,a_{x+1},\cdots,a_{y-1}]$$
+
+And
+
+$$\underset{n=x}{\overset{y}{ALL}} \begin{bmatrix}
+a_n\\
+\star_f
+\end{bmatrix} = \text{foldl } \text{REV}(f) \text{ } a_y \text{ } [a_{y-1},a_{y-2},\cdots,a_x]$$
+
+As you can see, init for both folds is $a_y$, which is an interesting property for folds. Although folds are how many of these sequences of operands with a single operator are described, adding more unique columns to the argument matrix of ALL notation complicates describing the fold much more. Thus, given a single-operational series, describing it with folds is probably better than using ALL notation. However, ALL notation is superior to folds when there are multiple operations and lists of operands, thus making it perfect for describing nearly all multi-operational series.
 
 \section{Total Operational ALL Notation Convergence}
 
@@ -839,7 +944,7 @@ $${\scriptstyle \underset{x \rightarrow \infty}{\text{lim}} a_{1,1} \star_1 (a_{
 
 And converges to some value $c$, then if:
 
-$${\scriptstyle \underset{x \rightarrow \infty}{\text{lim}} a_{1,1} \star_1 (a_{1,2} \star_2 (\cdots a_{1,y-1} \star_{y-1} (a_{1,y} \star_y (a_{2,1} \star_1 (a_{2,2} \star_2 (\cdots a_{2,y-1} \star_{y-1} (a_{2,y} \star_y (\cdots a_{x,1} \star_1 (a_{x,2} \star_2 (\cdots a_{x,y-1} \star_{y-1} a_{x,y}\star_y  }$$
+$${\scriptstyle \underset{x \rightarrow \infty}{\text{lim}} a_{1,1} \star_1 (a_{1,2} \star_2 (\cdots a_{1,y-1} \star_{y-1} (a_{1,y} \star_y (a_{2,1} \star_1 (a_{2,2} \star_2 (\cdots a_{2,y-1} \star_{y-1} (a_{2,y} \star_y (\cdots a_{x,1} \star_1 (a_{x,2} \star_2 (\cdots a_{x,y-1} \star_{y-1} a_{x,y}\star_y  }$$
 $${\scriptstyle (\underset{n=x+1}{\overset{x+1}{ALL(z)}} \begin{bmatrix}
 a_{n,1} & a_{n,2} & \cdots & a_{n,y} \\
 \star_1 & \star_2 & \cdots & \star_y
@@ -1079,11 +1184,11 @@ $$\int_a^b f(x) dx = \underset{\Delta x \rightarrow 0}{\lim} \sum f(x_i) \Delta 
 
 This clearly shows how to describe continuous summation with discrete summation. However, you can do the same thing with product notation (not completely accurate):
 
-$$\prod_a^b(1+f(x) dx) =  \underset{\Delta x \rightarrow 0}{\lim} \prod (1 + f(x_i) \Delta x)$$
+$$\prod_a^b(1+f(x) dx) =  \underset{\Delta x \rightarrow 0}{\lim} \prod (1 + f(x_i) \Delta x)$$
 
 Or more accurately:
 
-$$\prod_a^bf(x)^{dx} =  \underset{\Delta x \rightarrow 0}{\lim} \prod f(x_i)^{\Delta x}$$
+$$\prod_a^bf(x)^{dx} =  \underset{\Delta x \rightarrow 0}{\lim} \prod f(x_i)^{\Delta x}$$
 
 This shows how you can turn the discrete form of product notation into a continuous form. We can generalize this using ALL notation.
 
@@ -1097,23 +1202,27 @@ f(x_i)\Delta x \\
 
 Furthermore, a continuous ALL notation is created when you take the step size of the index for a normal ALL notation (likely 1) and you lower it (increasing the number of terms) until it approaches 0 to get the continuous form of ALL notation. Because this is mostly involving the index with respect to one value $x$, we may be able to create continuous forms of ALL notation with multiple columns in their matrix argument. Perhaps a more basic equation to explain this more clearly would be:
 
-$$\int_a^b f(x) dx = \underset{c \rightarrow \infty}{\lim} \frac{1}{c} \sum_{n=ca}^{cb} \frac{f(n)}{c}$$
-
-Or
-
 $$\int_a^b f(x) dx = \underset{n \rightarrow \infty}{\lim} \sum_{k=1}^{n} f(a+\frac{b-a}{n}k)\frac{b-a}{n}=\underset{\Delta x \rightarrow 0}{\lim} \sum f(x_i) \Delta x$$
 
 And thus:
 
-$$\prod_a^bf(x)^{dx} =  \underset{\Delta x \rightarrow 0}{\lim} \prod f(x_i)^{\Delta x}$$
+$$\prod_a^bf(x)^{dx} =  \underset{\Delta x \rightarrow 0}{\lim} \prod f(x_i)^{\Delta x}$$
 
-But why is the $dx$ an exponent in this notation one might wonder. It is because we are multiplying the intervals instead of adding them, so instead of multiplying $f(x)$ by $dx$ like in integration, we exponentiate $f(x)$ to $dx$. This implies that how we defined the continuous ALL notation generalization is incorrect. Instead of multiplying by $dx$ for all binary operation inputs, we must somehow incorporate the binary operation into the expression with $dx$. We know:
+Where $x_i = a+\frac{b-a}{n}k$ and $\Delta x = \frac{b-a}{n}$. But why is the $dx$ an exponent in this notation one might wonder. It is because we are multiplying the intervals instead of adding them, so instead of multiplying $f(x)$ by $dx$ like in integration, we exponentiate $f(x)$ to $dx$. This implies that how we defined the continuous ALL notation generalization is incorrect. Instead of multiplying by $dx$ for all binary operation inputs, we must somehow incorporate the binary operation into the expression with $dx$. We know:
 
 $$a \times b = \sum_{n=1}^b a$$
 
 $$a^b = \prod_{n=1}^b a$$
 
-Where $b$ is a natural number.
+Where $b$ is a natural number. Due to the complexity of trying to combine the addition of areas with some other binary operation being basically impossible in some situations, a general continuous form of ALL notation likely could not exist for all inputs.
+
+\section{Uses for ALL Notation}
+
+If one word could sum up all of ALL notation, it would be the word clarity. When one encounters an ellipsis for some sequence of many repeated operations and operands, figuring out what goes next can be challenging. With ALL notation, you can clearly and compactly define any operational series. As we have seen previously, ALL notation has a straightforward algorithm that can clearly define any standard operational series. However, the uses of ALL notation do not end there. We can find the connections between binary operations and their operands, revealing a deeper understanding of them. The algorithm for ALL notation can be used to calculate various folds and reductions in many programming languages, which can be vital in some algorithms. In algorithms that use reductions and folds, comments showing the ALL notation for them can make readers understand the algorithms more.
+
+\section{Conclusion}
+
+ALL notation is an elegant way to represent any (multi-)operational series.
 
 \section{Resources}
 
@@ -1127,6 +1236,14 @@ Below are some of the resources used for this paper:
 \url{https://www.wolframalpha.com/}
 
 \url{https://en.wikipedia.org/wiki/Product_integral}
+
+\url{https://www.youtube.com/watch?v=d1peBFDPEUw}
+
+\url{https://medium.com/@zaid.naom/exploring-folds-a-powerful-pattern-of-functional-programming-3036974205c8}
+
+\url{https://en.wikipedia.org/wiki/Fold_(higher-order_function)}
+
+\url{https://m.youtube.com/watch?v=WKKkIGncRn8}
 
 \section{Extra}
 
@@ -1185,6 +1302,79 @@ f_n \\
 \end{bmatrix})(x) = \underset{x \rightarrow \underset{x_2 \rightarrow a}{\lim} (\underset{n=2}{\overset{y}{ALL}} \begin{bmatrix}
 f_n \\
 \circ
-\end{bmatrix})(x_2)}{\lim} f_1(x)$$
+\end{bmatrix})(x_2)}{\lim} f_1(x), f_1 \text{ is continuous}$$
+
+$$\underset{n=1}{\overset{k}{ALL}} \begin{bmatrix}
+a & a\\
+\star & \star
+\end{bmatrix} = \underset{n=1}{\overset{2k}{ALL}} \begin{bmatrix}
+a\\
+\star
+\end{bmatrix}$$
+
+$$\underset{n=1}{\overset{k}{ALL}} \begin{bmatrix}
+a & b\\
+\star & \star
+\end{bmatrix} = \underset{n=1}{\overset{2k}{ALL}} \begin{bmatrix}
+\frac{a\left(\left(-1\right)^{1+n}+1\right)+b\left(\left(-1\right)^{n}+1\right)}{2} \\
+\star
+\end{bmatrix}$$
+
+$$\underset{n=1}{\overset{k}{ALL}} \begin{bmatrix}
+a_1 & a_2 & \cdots & a_x\\
+\star & \star & \cdots & \star
+\end{bmatrix} = \underset{n=1}{\overset{xk}{ALL}} \begin{bmatrix}
+a_{\text{mod}(n-1,x)+1}\\
+\star
+\end{bmatrix} = \underset{n=1}{\overset{xk}{ALL}} \begin{bmatrix}
+a_{((n-1) \% x) + 1}\\
+\star
+\end{bmatrix}, x, k \in \mathbb{N}$$
+
+$$\underset{n=1}{\overset{k}{ALL}} \begin{bmatrix}
+a_n & b_n & c_n\\
+\star_1 & \star_{\text{return first}} & \star_2
+\end{bmatrix} = a_1 \star_1 b_1$$
+
+$$\underset{n=1}{\overset{k}{ALL}} \begin{bmatrix}
+a_n & b_n & c_n\\
+\star_1 & \star_{\text{return second}} & \star_2
+\end{bmatrix} = \underset{n=1}{\overset{k}{ALL}} \begin{bmatrix}
+a_n & c_n\\
+\star_1 & \star_2
+\end{bmatrix}$$
+
+$$\underset{n=1}{\overset{k}{ALL}} \begin{bmatrix}
+a & 0\\
+\div & \star
+\end{bmatrix}=\text{ undefined}$$
+
+$$\underset{n=1}{\overset{k}{ALL}} \begin{bmatrix}
+a & b\\
+\star & \star
+\end{bmatrix}=\underset{n=1}{\overset{k}{ALL}} \begin{bmatrix}
+a \star b\\
+\star
+\end{bmatrix}, \star \text{ is commutative and associative}$$
+
+$$\text{mean}(A) = \underset{n=1}{\overset{\# A}{ALL}} \begin{bmatrix}
+\frac{A[n]}{\# A}\\
++
+\end{bmatrix}, A \text{ is a list of numbers}$$
+
+$$\underset{n=1}{\overset{k}{ALL}} \begin{bmatrix}
+a_n \\
+\text{REV} (\star_f)
+\end{bmatrix} = f( f( \cdots f(a_k, a_{k-1}), a_{k-2} \cdots ), a_1)$$
+
+$$\underset{n=1}{\overset{\infty}{ALL}} \begin{bmatrix}
+f \\
+\star_f
+\end{bmatrix}=f(f,f(f,f(\cdots)))$$
+
+$$\underset{n=1}{\overset{\infty}{ALL}} \begin{bmatrix}
+a_n \\
+\star
+\end{bmatrix}$$
 
 \end{document}
